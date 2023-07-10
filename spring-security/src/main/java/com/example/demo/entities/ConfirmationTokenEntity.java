@@ -1,19 +1,15 @@
-package com.example.demo.registration.token;
+package com.example.demo.entities;
 
-import com.example.demo.appuser.AppUser;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Entity
-public class ConfirmationToken {
-
+public class ConfirmationTokenEntity {
     @SequenceGenerator(
             name = "confirmation_token_sequence",
             sequenceName = "confirmation_token_sequence",
@@ -42,15 +38,15 @@ public class ConfirmationToken {
             nullable = false,
             name = "app_user_id"
     )
-    private AppUser appUser;
+    private UserDetailsEntity userDetails;
 
-    public ConfirmationToken(String token,
-                             LocalDateTime createdAt,
-                             LocalDateTime expiresAt,
-                             AppUser appUser) {
+    public ConfirmationTokenEntity(String token,
+                                   LocalDateTime createdAt,
+                                   LocalDateTime expiresAt,
+                                   UserDetailsEntity userDetails) {
         this.token = token;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
-        this.appUser = appUser;
+        this.userDetails = userDetails;
     }
 }

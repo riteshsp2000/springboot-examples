@@ -1,23 +1,18 @@
-package com.example.demo.appuser;
+package com.example.demo.entities;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.demo.enums.UserRole;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @Entity
-public class AppUser implements UserDetails {
+public class UserDetailsEntity implements org.springframework.security.core.userdetails.UserDetails {
 
 
     @SequenceGenerator(
@@ -35,27 +30,34 @@ public class AppUser implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+
     @Enumerated(EnumType.STRING)
-    private AppUserRole appUserRole;
+    private UserRole userRole;
     private Boolean locked = false;
     private Boolean enabled = false;
 
-    public AppUser(String firstName,
-                   String lastName,
-                   String email,
-                   String password,
-                   AppUserRole appUserRole) {
+    public UserDetailsEntity(String firstName,
+                             String lastName,
+                             String email,
+                             String password,
+                             UserRole userRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.appUserRole = appUserRole;
+        this.userRole = userRole;
     }
+
+    /*
+     * List of methods required by spring security
+     * to be implemented in order for it to work as
+     * required
+     * */
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(appUserRole.name());
+                new SimpleGrantedAuthority(userRole.name());
         return Collections.singletonList(authority);
     }
 

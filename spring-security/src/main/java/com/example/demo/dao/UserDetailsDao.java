@@ -1,5 +1,6 @@
-package com.example.demo.appuser;
+package com.example.demo.dao;
 
+import com.example.demo.entities.UserDetailsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
-public interface AppUserRepository
-        extends JpaRepository<AppUser, Long> {
+public interface UserDetailsDao
+        extends JpaRepository<UserDetailsEntity, Long> {
 
-    Optional<AppUser> findByEmail(String email);
+    Optional<UserDetailsEntity> findByEmail(String email);
 
     @Transactional
     @Modifying

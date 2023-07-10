@@ -1,7 +1,8 @@
-package com.example.demo.appuser;
+package com.example.demo.services;
 
-import com.example.demo.registration.token.ConfirmationToken;
-import com.example.demo.registration.token.ConfirmationTokenService;
+import com.example.demo.dao.UserDetailsDao;
+import com.example.demo.entities.ConfirmationTokenEntity;
+import com.example.demo.entities.UserDetailsEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,26 +15,26 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class AppUserService implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG =
             "user with email %s not found";
 
-    private final AppUserRepository appUserRepository;
+    private final UserDetailsDao userDetailsDao;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(email)
+        return userDetailsDao.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 String.format(USER_NOT_FOUND_MSG, email)));
     }
 
-    public String signUpUser(AppUser appUser) {
-        boolean userExists = appUserRepository
-                .findByEmail(appUser.getEmail())
+    public String signUpUser(UserDetailsEntity userDetailsEntity) {
+        boolean userExists = userDetailsDao
+                .findByEmail(userDetailsEntity.getEmail())
                 .isPresent();
 
         if (userExists) {
@@ -44,23 +45,22 @@ public class AppUserService implements UserDetailsService {
         }
 
         String encodedPassword = bCryptPasswordEncoder
-                .encode(appUser.getPassword());
+                .encode(userDetailsEntity.getPassword());
 
-        appUser.setPassword(encodedPassword);
+        userDetailsEntity.setPassword(encodedPassword);
 
-        appUserRepository.save(appUser);
+        userDetailsDao.save(userDetailsEntity);
 
         String token = UUID.randomUUID().toString();
 
-        ConfirmationToken confirmationToken = new ConfirmationToken(
+        ConfirmationTokenEntity confirmationTokenEntity = new ConfirmationTokenEntity(
                 token,
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(15),
-                appUser
+                userDetailsEntity
         );
 
-        confirmationTokenService.saveConfirmationToken(
-                confirmationToken);
+        confirmationTokenService.saveConfirmationToken(confirmationTokenEntity);
 
 //        TODO: SEND EMAIL
 
@@ -68,6 +68,6 @@ public class AppUserService implements UserDetailsService {
     }
 
     public int enableAppUser(String email) {
-        return appUserRepository.enableAppUser(email);
+        return userDetailsDao.enableAppUser(email);
     }
 }

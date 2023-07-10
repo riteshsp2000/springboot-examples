@@ -1,11 +1,10 @@
-package com.example.demo.registration;
+package com.example.demo.services;
 
-import com.example.demo.appuser.AppUser;
-import com.example.demo.appuser.AppUserRole;
-import com.example.demo.appuser.AppUserService;
-import com.example.demo.email.EmailSender;
-import com.example.demo.registration.token.ConfirmationToken;
-import com.example.demo.registration.token.ConfirmationTokenService;
+import com.example.demo.dto.RegistrationRequest;
+import com.example.demo.entities.ConfirmationTokenEntity;
+import com.example.demo.entities.UserDetailsEntity;
+import com.example.demo.enums.UserRole;
+import com.example.demo.utils.EmailValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RegistrationService {
 
-    private final AppUserService appUserService;
+    private final UserService userService;
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
@@ -29,14 +28,13 @@ public class RegistrationService {
             throw new IllegalStateException("email not valid");
         }
 
-        String token = appUserService.signUpUser(
-                new AppUser(
+        String token = userService.signUpUser(
+                new UserDetailsEntity(
                         request.getFirstName(),
                         request.getLastName(),
                         request.getEmail(),
                         request.getPassword(),
-                        AppUserRole.USER
-
+                        UserRole.USER
                 )
         );
 
@@ -50,7 +48,7 @@ public class RegistrationService {
 
     @Transactional
     public String confirmToken(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService
+        ConfirmationTokenEntity confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
@@ -66,8 +64,8 @@ public class RegistrationService {
         }
 
         confirmationTokenService.setConfirmedAt(token);
-        appUserService.enableAppUser(
-                confirmationToken.getAppUser().getEmail());
+        userService.enableAppUser(
+                confirmationToken.getUserDetails().getEmail());
         return "confirmed";
     }
 

@@ -1,5 +1,6 @@
-package com.example.demo.registration.token;
+package com.example.demo.dao;
 
+import com.example.demo.entities.ConfirmationTokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,14 +12,12 @@ import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
-public interface ConfirmationTokenRepository
-        extends JpaRepository<ConfirmationToken, Long> {
+public interface ConfirmationTokenDao extends JpaRepository<ConfirmationTokenEntity, Long> {
+    Optional<ConfirmationTokenEntity> findByToken(String token);
 
-    Optional<ConfirmationToken> findByToken(String token);
-
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     @Modifying
-    @Query("UPDATE ConfirmationToken c " +
+    @Query("UPDATE ConfirmationTokenEntity c " +
             "SET c.confirmedAt = ?2 " +
             "WHERE c.token = ?1")
     int updateConfirmedAt(String token,

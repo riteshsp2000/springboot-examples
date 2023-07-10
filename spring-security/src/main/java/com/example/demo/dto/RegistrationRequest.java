@@ -1,14 +1,10 @@
-package com.example.demo.registration;
+package com.example.demo.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 public class RegistrationRequest {
     private final String firstName;
     private final String lastName;

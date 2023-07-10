@@ -1,13 +1,14 @@
-package com.example.demo.registration;
+package com.example.demo.controllers;
 
+import com.example.demo.dto.RegistrationRequest;
+import com.example.demo.services.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "api/v1/registration")
 @AllArgsConstructor
-public class RegistrationController {
-
+public class AuthController {
     private final RegistrationService registrationService;
 
     @PostMapping
@@ -19,5 +20,4 @@ public class RegistrationController {
     public String confirm(@RequestParam("token") String token) {
         return registrationService.confirmToken(token);
     }
-
 }
